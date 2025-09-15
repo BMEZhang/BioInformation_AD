@@ -1,0 +1,12 @@
+name: protigy
+title: protigy
+username: manidr
+account: manidr
+server: rstudio-connect.broadapps.org
+hostUrl: https://rstudio-connect.broadapps.org/__api__
+appId: 81
+bundleId: 365
+url: https://rstudio-connect.broadapps.org/protigy/
+when: 1650040125.40518
+asMultiple: FALSE
+asStatic: FALSE

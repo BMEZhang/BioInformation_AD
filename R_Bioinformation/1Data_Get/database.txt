@@ -1,0 +1,308 @@
+核酸数据库 
+
+NCBI [https://www.ncbi.nlm.nih.gov/genbank/] 
+NCBI (National Center for Biotechnology Information）是指美国国立生物技术信息中心  
+
+EMBL [https://www.ebi.ac.uk/ena] 
+欧洲分子生物学实验室EMBL（The European Molecular Biology Laboratory）  
+
+DDBJ [https://www.ddbj.nig.ac.jp/index-e.html] 
+DDBJ(DNA Data Bank of Japan)，于1984年建立，是世界三大DNA 数据库之一，与NCBI的GenBank，EMBL的EBI数据库共同组成国际DNA数据库  
+
+CNGB [https://db.cngb.org/] 
+中国国家数据库（China National GeneBank）位于深圳大鹏新区，是继世界三大数据库之后的全球第四大国家级数据库。它是中国首个，也是唯一一个国家基因库，相对于全球另外三个基因库而言，国家基因库样品保存的规模、存储量和可访问的数据量皆是全球最大。  
+
+BIGD [https://bigd.big.ac.cn/] 
+中国国家基因组科学数据中心 生命与健康大数据中心 (National Genomics Data Center BIG Data Center)  
+
+
+
+非编码RNA数据库 
+
+
+1.非编码小RNA数据库 
+
+miRBase [http://www.mirbase.org/]  
+
+piRNAbank [http://pirnabank.ibab.ac.in/]  
+
+piRNAbank [http://gtrnadb.ucsc.edu/]  
+
+SILVA [https://www.arb-silva.de/]  
+
+
+2.长非编码RNA数据库： 
+
+LncRNAdb [http://www.lncrnadb.org/] 真核生物  
+
+LncRNAwiki [http://lncrna.big.ac.cn/index.php/Main_Page] 人类长非编码RNA数据库
+  
+3.非编码RNA家族数据库 
+
+Rfam[http://rfam.xfam.org/] 类似于Pfam的RNA家族注释数据库  
+
+4.非编码RNA序列数据库 
+
+RNAcentral [https://rnacentral.org/ ] 
+
+
+
+蛋白质数据库 
+
+
+0.蛋白质信息 
+
+Human protein atlas [http://www.proteinatlas.org/ ] 
+人体蛋白在细胞、组织、病理条件下的表达  
+
+
+1.蛋白序列数据库 
+
+Pfam [http://pfam.xfam.org/] 
+Pfam是蛋白质家族的数据库，包括使用隐马尔可夫模型生成的注释和多序列比对。  
+
+SwissProt [http://us.expasy.org/sprot/] 
+手动注释的非冗余蛋白序列数据库  
+
+UniProt [ https://www.uniprot.org/]  
+
+PIR [http://www.proteininformationresource.org/]  
+
+Antibodies [http://www.bioinf.org.uk/abs/]  
+
+BRENDA [ http://www.brenda-enzymes.org/]  
+
+HPRD [http://www.hprd.org/]  
+
+InterPro [http://www.ebi.ac.uk/interpro/] 
+通过整合多个蛋白相关数据库，提供了一个方便的对蛋白序列进行功能注释的平台，包括对蛋白质家族、结构域、功能位点的预测 
+
+iProClass [http://pir.georgetown.edu/iproclass/]  
+
+PRF [http://www.prf.or.jp/]  
+
+REBASE [http://rebase.neb.com/rebase/rebase.html]  
+
+
+2.蛋白质结构数据库 
+
+PDB [http://www.rcsb.org/] 通过实验测定的结构  
+
+SCOP [http://scop.mrc-lmb.cam.ac.uk/scop/]  
+
+CATH [http://www.cathdb.info/]  
+
+PSI [http://www.uwstructuralgenomics.org/]  
+
+
+3.蛋白组数据库 
+
+PRIDE [https://www.ebi.ac.uk/pride/archive/] 
+
+
+4.蛋白质功能域数据库 
+
+PROSITE [https://prosite.expasy.org/] 最全面 
+
+Pfam [http://pfam.xfam.org/] 最专业  
+
+ProDom [http://prodom.prabi.fr/]  
+
+CCD [http://www.ncbi.nlm.nih.gov/Structure/cdd/cdd.shtm]  
+
+Prints [http://www.bioinf.man.ac.uk/dbbrowser/PRINTS/index.php]  
+
+SMART [ http://smart.embl-heidelberg.de/]  
+
+TIGRFAM [http://www.tigr.org/TIGRFAMs/]  
+
+
+5.蛋白互作数据库 
+
+STRING [https://string-db.org/]  
+
+DIP [https://dip.doe-mbi.ucla.edu/dip/Main.cgi] 
+实验验证的蛋白相互作用数据库  
+
+BioGRID [https://thebiogrid.org/] ：  
+
+IntAct [ https://www.ebi.ac.uk/intact/]  
+
+
+
+代谢数据库 
+
+MapMan：一个功能强大的代谢途径查看和编辑软件 
+
+
+1.代谢途径数据库 
+
+KEGG [https://www.kegg.jp/]  
+
+GO [http://www.geneontology.org/]  
+
+NCBI BioSystems [https://www.ncbi.nlm.nih.gov/biosystems]  
+
+IMP [http://imp.princeton.edu/]  
+
+plantCyc [https://www.plantcyc.org/]  
+
+MANET [ https://manet.illinois.edu/]  
+
+MetaNetX [ https://www.metanetx.org/]  
+
+
+2.代谢组学常用数据库 
+
+MataboLights [https://www.ebi.ac.uk/metabolights/]  
+
+HMDB [http://www.hmdb.ca/]  
+
+YMDB [http://www.ymdb.ca/]  
+
+ECMDB [http://ecmdb.ca/]  
+
+
+3.表型数据库 
+
+Planteome [http://www.planteome.org/]  
+
+dbGaP [https://www.ncbi.nlm.nih.gov/gap/]  
+
+IPPN [https://www.plant-phenotyping.org/]  
+
+
+序列比对 
+
+1.序列与数据库比对 
+
+Blast [https://blast.ncbi.nlm.nih.gov/Blast.cgi] 
+
+2.多序列间比对 
+
+Clustal 
+
+3.序列进化树分析 
+
+MEGA 
+
+基因分析 
+
+0.基因信息 
+
+GeneCard [https://www.genecards.org/]  
+
+Gene Wiki[https://en.wikipedia.org/wiki/Wikipedia:Gene_Wiki ]  
+
+1.基因注释 
+
+Blast [https://blast.ncbi.nlm.nih.gov/Blast.cgi]  
+
+Interproscan [http://www.ebi.ac.uk/interpro/]，  
+
+WEGO [http://wego.genomics.org.cn/]  
+
+KAAS [https://www.genome.jp/tools/kaas/]  
+
+
+2.基因功能预测： 
+
+FGENESH [http://linux1.softberry.com/berry.phtml?topic=fgenesh&amp;group=programs&amp;subgroup=gfind]  
+
+AUGUSTUS [http://bioinf.uni-greifswald.de/augustus/submission.php ]  
+
+GENESCAN [http://argonaute.mit.edu/GENSCAN.html]  
+
+GeneMark [http://topaz.gatech.edu/GeneMark/]  
+
+Glimmer [http://ccb.jhu.edu/software/glimmer/index.shtml]  
+
+
+3.基因结构预测 
+
+Exon-Intron Graphic Maker [http://wormweb.org/exonintron] 
+根据候选基因的外显子和内含子等信息绘制基因结构  
+
+Blastp [https://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastp&amp;PAGE_TYPE=BlastSearch&amp;LINK_LOC=blasthome] 
+可在线获取蛋白结构域的注释和位置信息 
+
+ 
+4.同源基因分析 
+
+OrthoDB是直系同源物的综合目录[https://www.orthodb.org/] 
+
+
+5.亚细胞定位预测 
+
+PSORT Prediction [http://psort1.hgc.jp/form.html] 
+
+
+6.启动子分析 
+
+Plantcare [http://bioinformatics.psb.ugent.be/webtools/plantcare/html/] 
+
+
+7.调控目的基因的miRNA预测 
+
+psRNAtarget [http://plantgrn.noble.org/psRNATarget/analysis?function=2] 
+
+
+8.表达分析 
+
+ArrayExpress [https://www.ebi.ac.uk/arrayexpress/ ] 数据来自EMBL的高通量功能基因组学实验的数据；  
+
+BAR [http://bar.utoronto.ca] 
+在分析基因功能时，通常会参考基因的表达模式，即基因在植物不同组织不同发育时期的表达丰度变化。通过在线分析网站BAR对候基因进行表达分析。 是一个植物生信分析资源网站，用该网站分析基因表达时，不仅可以获得基因表达模式的热图，还可以获得可视化的电子荧光图片，直观呈现基因在植物组织中的表达位置。  
+
+
+9.基因结构绘制 
+
+GSDS [http://gsds.cbi.pku.edu.cn/] 
+Gene Structure Display Server，基于基因组注释文件绘制序列基因结构等功能  
+
+
+蛋白质分析 
+
+1.蛋白二级三级结构预测及绘图 
+
+CFSSP [http://www.biogem.org/tool/chou-fasman/]
+
+SOPMA [https://npsa-prabi.ibcp.fr/cgi-bin/npsa_automat.pl?page=npsa_sopma.html]
+
+PredictProtein [https://www.predictprotein.org/]
+
+SWISS-MODEL [https://swissmodel.expasy.org/interactive] 
+
+
+2.蛋白特性分析 
+
+ProtParam [http://web.expasy.org/protparam/] 
+蛋白特性分析是指蛋白的一些物理和化学参数，如分子量、等电点、氨基酸和原子组成、消光系数、半衰期、不稳定系数、脂肪族氨基酸指数、亲水性。这些参数，有助于进行蛋白的相关生化实验。比如在体外体系（大肠杆菌、酵母等）表达和纯化目的蛋白时，需要考虑蛋白的分子量、等电点、消光系数、不稳定系数和亲水性等。在酶活实验中，也需要根据这些参数优化实验体系。  
+
+
+3.蛋白亲疏水性分析 
+
+Protscale [https://web.expasy.org/protscale/] 
+蛋白氨基酸的亲疏水性主要由其侧链基团R，如果R只是H或是C、H两元素组成的话，都是疏水的，如果含有极性侧链基团，如-OH、-SH、-COOH、-NH2 等，则就是极性的（亲水的）。疏水性氨基酸有酪氨酸、色氨酸、苯丙氨酸、缬氨酸、亮氨酸、异亮氨酸、丙氨酸和蛋氨酸（甲硫氨酸）。疏水性氨基酸在蛋白质内部，在保持蛋白质的三级结构上，酶和基质、抗体和抗原间的相互作用等各种非共价键的分子结合方面，具有重要作用。  
+
+
+4.跨膜结构分析 
+
+TMHMM [http://www.cbs.dtu.dk/services/TMHMM/] 
+蛋白的跨膜结构分析对于预测蛋白的亚细胞定位密切相关。如果具有跨膜结构，蛋白很可能定位于细胞中与膜相关的结构，如细胞质膜、叶绿体膜或线粒体膜等内膜系统。此外，蛋白跨膜结构分析对于蛋白功能分析也有一定的帮助。比如某蛋白没有跨膜结构，但是亚细胞定位实验显示其可定位于膜相关结构，这说明该蛋白可能通过其他膜定位蛋白招募过去的。  
+
+
+5.信号肽分析 
+
+SignalP [http://www.cbs.dtu.dk/services/SignalP/] 
+峰信号位置为信号肽切割点，峰之前的序列为信号肽 
+信号肽是指引导新合成的蛋白质向分泌通路转移的短肽链，常位于蛋白的N-末端，负责把蛋白质引导到不同膜结构的亚细胞器内。编码分泌蛋白的mRNA在翻译时首先合成N末端的信号肽，它被信号肽识别蛋白(SRP)所识别，SRP将核糖体携带至内质网上，内质网膜上的 SPR 受体识别并与之结合。新合成蛋白在信号肽引导下到达内质网内腔，而信号肽则在信号肽酶的作用下被切除。由于它的引导，新生的多肽就能够通过内质网膜进入腔内，最终被分泌到胞外。在宿主菌中表达外源蛋白时，可用信号肽引导外源蛋白定位分泌到胞外，提高蛋白可溶性，在原核表达系统（大肠杆菌、芽孢杆菌等）和真核表达系统（如毕赤酵母）中均有应用。
+
+  
+6.磷酸化位点分析 
+
+NetPhos [http://www.cbs.dtu.dk/services/NetPhos/]  
+
+KinasePhos-2.0 [http://kinasephos2.mbc.nctu.edu.tw/] 
+
+蛋白质磷酸化指由蛋白质激酶催化的把 ATP 的磷酸基转移到底物蛋白质氨基酸残基（丝氨酸、苏氨酸、酪氨酸）上的过程，或者在信号作用下结合 GTP（通常以 GTP 取代 GDP），是生物体内一种普通的调节方式，在细胞信号转导的过程中起重要作用。在信号达到时通过获得一个或几个磷酸集团而被激活，而在信号减弱时能去除这些集团，从而失去活性。有时某个信号蛋白磷酸化通常造成下游的蛋白依次发生磷酸化，形成磷酸化级联反应。  

@@ -1,0 +1,3 @@
+Sequencing and screen analysis
+Extracted DNA was submitted to the Broad Genetic Perturbation Platform (GPP) for Next Generation Sequencing. After deconvolution, reads per barcode were analyzed with the GPP Pooled Screen Analysis Tool using the Hypergeometric method (https://portals.broadinstitute.org/gpp/public/analysis-tools/crispr-gene-scoring).
+PAPER:		https://www.nature.com/articles/s41467-023-36132-9#Sec12

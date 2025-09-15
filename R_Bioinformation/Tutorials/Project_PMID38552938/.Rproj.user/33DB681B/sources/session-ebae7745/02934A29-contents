@@ -1,0 +1,527 @@
+### step 1 00_pre_install.R ---------------------------------------------------------
+options("repos"="https://mirrors.ustc.edu.cn/CRAN/")
+if(!require("BiocManager")) install.packages("BiocManager",update = F,ask = F)
+options(BioC_mirror="https://mirrors.ustc.edu.cn/bioc/")
+
+cran_packages <- c('tidyr',
+                   'tibble',
+                   'dplyr',
+                   'stringr',
+                   'ggplot2',
+                   'ggpubr',
+                   'factoextra',
+                   'FactoMineR',
+                   'devtools',
+                   'cowplot',
+                   'patchwork',
+                   'basetheme',
+                   'ggthemes',
+                   'paletteer',
+                   'AnnoProbe',
+                   'tinyarray') 
+Biocductor_packages <- c('GEOquery',
+                         'hgu133plus2.db',
+                         'ggnewscale',
+                         "limma",
+                         "impute",
+                         "GSEABase",
+                         "GSVA",
+                         "clusterProfiler",
+                         "org.Hs.eg.db",
+                         "preprocessCore",
+                         "enrichplot",
+                         "ggplotify")
+
+for (pkg in cran_packages){
+  if (! require(pkg,character.only=T) ) {
+    install.packages(pkg,ask = F,update = F)
+    require(pkg,character.only=T) 
+  }
+}
+
+
+for (pkg in Biocductor_packages){
+  if (! require(pkg,character.only=T) ) {
+    BiocManager::install(pkg,ask = F,update = F)
+    require(pkg,character.only=T) 
+  }
+}
+
+
+for (pkg in c(Biocductor_packages,cran_packages)){
+  require(pkg,character.only=T) }
+  #character.only=T指的是require函数加载的是pkg所代表的字符串表示的包，而不是pkg这个包
+  
+
+
+### step2. 01_start_GEO.R ---------------------------------------------------------
+rm(list = ls()) #清空变量
+library(GEOquery)
+gse_number = "GSE5281"
+eSet <- getGEO(gse_number, 
+               destdir = '../DATA/GEO_AD/GSE5281/', 
+               getGPL = F)
+class(eSet)
+length(eSet)
+eSet = eSet[[1]] 
+#1.提取表达矩阵exp
+exp <- exprs(eSet)
+exp[1:4,1:4]
+#exp = log2(exp+1) #看数据是否已经取过log值——数值是否跨数量级
+ex <- exp #把需要判断的矩阵命名为ex
+qx <- as.numeric(quantile(ex, c(0., 0.25, 0.5, 0.75, 0.99, 1.0), na.rm=T))
+LogC <- (qx[5] > 100) ||
+  (qx[6]-qx[1] > 50 && qx[2] > 0) ||
+  (qx[2] > 0 && qx[2] < 1 && qx[4] > 1 && qx[4] < 2)
+if (LogC) { ex[which(ex <= 0)] <- NaN
+exp <- log2(ex+1)
+print("log2 transform finished")}else{print("log2 transform not needed")}
+boxplot(exp) #看一下数据是否基本在一条直线上
+#若数据差异较大，则需标准化一下：exp2=limma::normalizeBetweenArrays(exp)
+
+#(2)提取临床信息
+pd <- pData(eSet)
+
+#(3)调整pd的行名顺序与exp列名完全一致
+p = identical(rownames(pd),colnames(exp));p
+if(!p) exp = exp[,match(rownames(pd),colnames(exp))]
+
+#(4)提取芯片平台编号
+gpl_number <- eSet@annotation
+save(gse_number,pd,exp,gpl_number,file = "../DATA/GEO_AD/GSE5281/step1output.Rdata")
+
+
+
+### step3. 02_group_ids.R ---------------------------------------------------------
+# Group(实验分组)和ids(探针注释)
+rm(list = ls())  
+load(file = "../DATA/GEO_AD/GSE5281/step1output.Rdata")
+library(stringr)
+# 1.Group----实验分组要去阅读临床信息的表格来获取，每个GSE的都不一样
+# 第一类，有现成的可以用来分组的列
+Group = pd$`disease state:ch1` 
+
+#第二类，自己生成
+Group = c(rep("RA",times=13),
+          rep("control",times=9))
+Group = rep(c("RA","control"),times = c(13,9))
+
+#第三类，匹配关键词，自行分类
+Group=ifelse(str_detect(pd$source_name_ch1,"control"),
+             "control",
+             "RA")
+
+#设置参考水平，指定levels，对照组在前，处理组在后
+Group = factor(Group,
+               levels = c("control","RA"))
+Group
+
+#2.探针注释的获取-----------------
+#捷径
+find_anno(gpl_number)
+ids <- AnnoProbe::idmap('GPL570')
+#方法1 BioconductorR包(最常用)
+gpl_number 
+#http://www.bio-info-trainee.com/1399.html
+if(!require(hgu133plus2.db))BiocManager::install("hgu133plus2.db")
+library(hgu133plus2.db)
+ls("package:hgu133plus2.db")
+#用toTable把内置数据转换为数据框
+ids <- toTable(hgu133plus2SYMBOL)
+head(ids)
+# 方法2 读取GPL平台的soft文件，按列取子集
+##https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL570
+if(F){
+  #注：soft文件列名不统一，活学活用，有的表格里没有symbol列，也有的GPL平台没有提供注释
+  a = getGEO(gpl_number,destdir = ".")
+  b = a@dataTable@table
+  colnames(b)
+  ids2 = b[,c("ID","Gene Symbol")]
+  colnames(ids2) = c("probe_id","symbol")
+  ids2 = ids2[ids2$symbol!="" & !str_detect(ids2$symbol,"///"),]
+}
+
+# 方法3 官网下载注释文件并读取
+##http://www.affymetrix.com/support/technical/byproduct.affx?product=hg-u133-plus
+# 方法4 自主注释 
+#https://mp.weixin.qq.com/s/mrtjpN8yDKUdCSvSUuUwcA
+save(exp,Group,ids,gse_number,file = "step2output.Rdata")
+
+
+
+### step4. 03_pca_heatmap.R ---------------------------------------------------------
+rm(list = ls())  
+load(file = "step1output.Rdata")
+load(file = "step2output.Rdata")
+#输入数据：exp和Group
+#Principal Component Analysis
+#http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/112-pca-principal-component-analysis-essentials
+
+# 1.PCA 图----
+dat=as.data.frame(t(exp))
+library(FactoMineR)
+library(factoextra) 
+dat.pca <- PCA(dat, graph = FALSE)
+pca_plot <- fviz_pca_ind(dat.pca,
+                         geom.ind = "point", # show points only (nbut not "text")
+                         col.ind = Group, # color by groups
+                         palette = c("#00AFBB", "#E7B800"),
+                         addEllipses = TRUE, # Concentration ellipses
+                         legend.title = "Groups"
+)
+pca_plot
+ggsave(plot = pca_plot,filename = paste0(gse_number,"_PCA.png"))
+save(pca_plot,file = "pca_plot.Rdata")
+
+# 2.top 1000 sd 热图---- 
+#挑出表达矩阵里方差最大的1000个探针的名字！
+cg=names(tail(sort(apply(exp,1,sd)),1000))
+n=exp[cg,]
+
+# 直接画热图，对比不鲜明——因为有些热图颜色对应的取值范围默认是从数据最小值到最大值，离群值会造成大部分数据的热图颜色相近
+library(pheatmap)
+annotation_col=data.frame(group=Group)
+rownames(annotation_col)=colnames(n) 
+pheatmap(n,
+         show_colnames =F,
+         show_rownames = F,
+         #cluster_cols = F, #不按分组聚类
+         annotation_col=annotation_col
+)
+
+# 按行标准化
+pheatmap(n,
+         show_colnames =F,
+         show_rownames = F,
+         annotation_col=annotation_col,
+         scale = "row", #标准化的依据
+         breaks = seq(-3,3,length.out = 100) #颜色分割
+) 
+dev.off()
+
+
+
+
+### step5. 04_DEG.R ------------------------------------------------------------------
+
+rm(list = ls()) 
+load(file = "step2output.Rdata")
+#差异分析，用limma包来做
+#需要表达矩阵和Group，不需要改
+library(limma)
+design=model.matrix(~Group)
+fit=lmFit(exp,design)
+fit=eBayes(fit)
+deg=topTable(fit,coef=2,number = Inf) #以上操作为用limma包对表达矩阵进行一系列基于统计学原理的处理分析。
+
+#为deg数据框添加几列
+#1.加probe_id列，把行名变成一列
+library(dplyr)
+deg <- mutate(deg,probe_id=rownames(deg))
+head(deg)
+#2.加上探针注释
+ids = ids[!duplicated(ids$symbol),]
+deg <- inner_join(deg,ids,by="probe_id") #随机去掉对应同一基因的多个探针，只留下一个探针
+head(deg)
+nrow(deg)
+#3.加change列,标记上下调基因
+logFC_t=1
+P.Value_t = 0.05 #logFC和p-value可以自己定义
+k1 = (deg$P.Value < P.Value_t)&(deg$logFC < -logFC_t)
+k2 = (deg$P.Value < P.Value_t)&(deg$logFC > logFC_t)
+deg <- mutate(deg,change = ifelse(k1,"down",ifelse(k2,"up","stable")))
+table(deg$change)
+#4.加ENTREZID列，用于富集分析（symbol转entrezid，然后inner_join）
+library(clusterProfiler)
+library(org.Hs.eg.db)
+s2e <- bitr(deg$symbol, 
+            fromType = "SYMBOL",
+            toType = "ENTREZID",
+            OrgDb = org.Hs.eg.db)#人类,不同物种的OrgDb不同！！！
+#其他物种http://bioconductor.org/packages/release/BiocViews.html#___OrgDb
+dim(deg)
+deg <- inner_join(deg,s2e,by=c("symbol"="SYMBOL"))
+dim(deg)
+length(unique(deg$symbol))
+save(Group,deg,logFC_t,P.Value_t,gse_number,file = "step4output.Rdata")
+
+
+
+### step6. 05_plots.R --------------------------------------------------------------
+rm(list = ls()) 
+load(file = "step1output.Rdata")
+load(file = "step4output.Rdata")
+#1.火山图----
+library(dplyr)
+library(ggplot2)
+dat  = deg[!duplicated(deg$symbol),] #去掉一个探针对应多个gene symbol的情况
+
+p <- ggplot(data = dat, 
+            aes(x = logFC, 
+                y = -log10(P.Value))) +
+  geom_point(alpha=0.4, size=3.5, 
+             aes(color=change)) +
+  ylab("-log10(Pvalue)")+
+  scale_color_manual(values=c("blue", "grey","red"))+
+  geom_vline(xintercept=c(-logFC_t,logFC_t),lty=4,col="black",lwd=0.8) +
+  geom_hline(yintercept = -log10(P.Value_t),lty=4,col="black",lwd=0.8) +
+  theme_bw()
+p
+
+for_label <- dat%>% 
+  filter(symbol %in% c("HADHA","LRRFIP1"))
+
+volcano_plot <- p +
+  geom_point(size = 3, shape = 1, data = for_label) +
+  ggrepel::geom_label_repel(
+    aes(label = symbol),
+    data = for_label,
+    color="black"
+  )
+volcano_plot
+ggsave(plot = volcano_plot,filename = paste0(gse_number,"_volcano.png"))
+
+#2.差异基因热图----
+
+load(file = 'step2output.Rdata')
+# 表达矩阵行名替换
+exp = exp[dat$probe_id,]
+rownames(exp) = dat$symbol
+if(F){
+  #全部差异基因
+  cg = dat$symbol[dat$change !="stable"]
+  length(cg)
+}else{
+  #取前10上调和前10下调
+  x=dat$logFC[dat$change !="stable"] 
+  names(x)=dat$symbol[dat$change !="stable"] 
+  cg=names(c(head(sort(x),10),tail(sort(x),10)))
+  length(cg)
+}
+n=exp[cg,]
+dim(n)
+
+#差异基因热图
+library(pheatmap)
+annotation_col=data.frame(group=Group)
+rownames(annotation_col)=colnames(n) 
+heatmap_plot <- pheatmap(n,show_colnames =F,
+                         scale = "row",
+                         #cluster_cols = F, 
+                         annotation_col=annotation_col,
+                         breaks = seq(-3,3,length.out = 100)
+) 
+heatmap_plot
+ggsave(heatmap_plot,filename = paste0(gse_number,"_heatmap.png"))
+
+# 3.感兴趣基因的箱线图----
+g = c(head(cg,3),tail(cg,3))
+library(tidyr)
+library(tibble)
+library(dplyr)
+dat = t(exp[g,]) %>% 
+  as.data.frame() %>% 
+  rownames_to_column() %>% 
+  mutate(group = Group)
+
+pdat = dat%>% 
+  pivot_longer(cols = 2:(ncol(dat)-1),
+               names_to = "gene",
+               values_to = "count")
+
+pdat$gene = factor(pdat$gene,levels = cg,ordered = T)
+pdat$change = ifelse(pdat$gene %in% head(cg,10),"down","up")
+library(ggplot2)
+library(paletteer)
+box_plot = ggplot(pdat,aes(gene,count))+
+  geom_boxplot(aes(fill = group))+
+  #scale_fill_manual(values = c("blue","red"))+
+  scale_fill_paletteer_d("basetheme::minimal")+
+  geom_jitter()+
+  theme_bw()+
+  facet_wrap(~change,scales = "free")
+box_plot
+ggsave(box_plot,filename = paste0(gse_number,"_boxplot.png"))
+
+# 4.感兴趣基因的相关性----
+library(corrplot)
+M = cor(t(exp[g,]))
+pheatmap(M)
+
+my_color = rev(paletteer_d("RColorBrewer::RdYlBu"))
+my_color = colorRampPalette(my_color)(10)
+corrplot(M, type="upper",
+         method="pie",
+         order="hclust", 
+         col=my_color,
+         tl.col="black", 
+         tl.srt=45)
+library(cowplot)
+cor_plot <- recordPlot() 
+
+# 拼图
+load("pca_plot.Rdata")
+library(patchwork)
+library(ggplotify)
+(pca_plot + volcano_plot +as.ggplot(heatmap_plot))/box_plot
+
+plot_grid(cor_plot,heatmap_plot$gtable)
+
+
+
+### step7. 06_anno.R --------------------------------------------------------------
+rm(list = ls())  
+load(file = 'step4output.Rdata')
+library(clusterProfiler)
+library(ggthemes)
+library(org.Hs.eg.db)
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(enrichplot)
+
+# 1.GO 富集分析----
+
+#(1)输入数据
+gene_up = deg$ENTREZID[deg$change == 'up'] 
+gene_down = deg$ENTREZID[deg$change == 'down'] 
+gene_diff = c(gene_up,gene_down)
+
+#(2)富集
+#以下步骤耗时很长，设置了存在即跳过
+if(!file.exists(paste0(gse_number,"_GO.Rdata"))){
+  ego <- enrichGO(gene = gene_diff,
+                  OrgDb= org.Hs.eg.db,
+                  ont = "ALL",
+                  readable = TRUE)
+  ego_BP <- enrichGO(gene = gene_diff,
+                     OrgDb= org.Hs.eg.db,
+                     ont = "BP",
+                     readable = TRUE)
+  #ont参数：One of "BP", "MF", and "CC" subontologies, or "ALL" for all three.
+  save(ego,ego_BP,file = paste0(gse_number,"_GO.Rdata"))
+}
+load(paste0(gse_number,"_GO.Rdata"))
+
+#(3)可视化
+#条带图
+barplot(ego)
+#气泡图
+dotplot(ego)
+
+dotplot(ego, split = "ONTOLOGY", font.size = 10, 
+        showCategory = 5) + 
+  facet_grid(ONTOLOGY ~ ., space = "free_y",scales = "free_y") + 
+  scale_y_discrete(labels = function(x) str_wrap(x, width = 45))
+
+#geneList 用于设置下面图的颜色
+geneList = deg$logFC
+names(geneList)=deg$ENTREZID
+
+#(3)展示top通路的共同基因，要放大看。
+#Gene-Concept Network
+cnetplot(ego,categorySize="pvalue", foldChange=geneList,colorEdge = TRUE)
+cnetplot(ego, showCategory = 3,foldChange=geneList, circular = TRUE, colorEdge = TRUE)
+#Enrichment Map,这个函数最近更新过，版本不同代码会不同
+
+Biobase::package.version("enrichplot")
+
+if(T){
+  emapplot(pairwise_termsim(ego)) #新版本
+}else{
+  emapplot(ego)#旧版本
+}
+#(4)展示通路关系 https://zhuanlan.zhihu.com/p/99789859
+#goplot(ego)
+goplot(ego_BP)
+
+#(5)Heatmap-like functional classification
+heatplot(ego,foldChange = geneList,showCategory = 8)
+
+# 2.KEGG pathway analysis----
+#上调、下调、差异、所有基因
+#（1）输入数据
+gene_up = deg[deg$change == 'up','ENTREZID'] 
+gene_down = deg[deg$change == 'down','ENTREZID'] 
+gene_diff = c(gene_up,gene_down)
+
+#（2）对上调/下调/所有差异基因进行富集分析
+
+if(!file.exists(paste0(gse_number,"_KEGG.Rdata"))){
+  kk.up <- enrichKEGG(gene         = gene_up,
+                      organism     = 'hsa')
+  kk.down <- enrichKEGG(gene         =  gene_down,
+                        organism     = 'hsa')
+  kk.diff <- enrichKEGG(gene         = gene_diff,
+                        organism     = 'hsa')
+  save(kk.diff,kk.down,kk.up,file = paste0(gse_number,"_KEGG.Rdata"))
+}
+load(paste0(gse_number,"_KEGG.Rdata"))
+
+#(3)看看富集到了吗？https://mp.weixin.qq.com/s/NglawJgVgrMJ0QfD-YRBQg
+table(kk.diff@result$p.adjust<0.05)
+table(kk.up@result$p.adjust<0.05)
+table(kk.down@result$p.adjust<0.05)
+
+#(4)双向图
+# 富集分析所有图表默认都是用p.adjust,富集不到可以退而求其次用p值，在文中说明即可
+down_kegg <- kk.down@result %>%
+  filter(pvalue<0.05) %>% #筛选行
+  mutate(group=-1) #新增列
+
+up_kegg <- kk.up@result %>%
+  filter(pvalue<0.05) %>%
+  mutate(group=1)
+
+source("kegg_plot_function.R") #加载某个函数
+g_kegg <- kegg_plot(up_kegg,down_kegg)
+g_kegg
+#g_kegg +scale_y_continuous(labels = c(2,0,2,4,6))
+ggsave(g_kegg,filename = 'kegg_up_down.png')
+
+# 3.GSEA作kegg和GO富集分析----
+#https://www.yuque.com/xiaojiewanglezenmofenshen/dbwkg1/ytawgg
+
+#(1)查看示例数据
+data(geneList, package="DOSE")
+#(2)将我们的数据转换成示例数据的格式
+geneList=deg$logFC
+names(geneList)=deg$ENTREZID
+geneList=sort(geneList,decreasing = T)
+#(3)GSEA富集
+kk_gse <- gseKEGG(geneList     = geneList,
+                  organism     = 'hsa',
+                  verbose      = FALSE)
+down_kegg<-kk_gse[kk_gse$pvalue<0.05 & kk_gse$enrichmentScore < 0,];down_kegg$group=-1
+up_kegg<-kk_gse[kk_gse$pvalue<0.05 & kk_gse$enrichmentScore > 0,];up_kegg$group=1
+#(4)可视化
+g2 = kegg_plot(up_kegg,down_kegg)
+g2
+
+
+
+### step8. 07_string.R --------------------------------------------------------------
+rm(list = ls())
+load("step4output.Rdata")
+gene_up= deg[deg$change == 'up','symbol'] 
+gene_down=deg[deg$change == 'down','symbol']
+gene_diff = c(gene_up,gene_down)
+
+# 1.制作string的输入数据
+write.table(gene_diff,
+            file="diffgene.txt",
+            row.names = F,
+            col.names = F,
+            quote = F)
+# 从string网页获得string_interactions.tsv
+# 2.准备cytoscape的输入文件
+p = deg[deg$change != "stable",
+        c("symbol","logFC")]
+head(p)
+write.table(p,
+            file = "deg.txt",
+            sep = "\t",
+            quote = F,
+            row.names = F)
+# string_interactions.tsv是网络文件
+# deg.txt是属性表格

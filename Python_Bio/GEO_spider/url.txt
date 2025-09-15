@@ -1,0 +1,41 @@
+https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE138261
+
+
+<tbody><tr bgcolor="#eeeeee" valign="top"><td align="middle" bgcolor="#CCCCCC"><strong>Supplementary file</strong></td>
+<td align="middle" bgcolor="#CCCCCC"><strong>Size</strong></td>
+<td align="middle" bgcolor="#CCCCCC"><strong>Download</strong></td>
+<td align="middle" bgcolor="#CCCCCC"><strong>File type/resource</strong></td>
+</tr>
+<tr valign="top"><td bgcolor="#DEEBDC">GSE295890_AD_HSV_AD_CTRL.xlsx</td>
+<td bgcolor="#DEEBDC" title="7414752">7.1 Mb</td>
+<td bgcolor="#DEEBDC"><a href="https://ftp.ncbi.nlm.nih.gov/geo/series/GSE295nnn/GSE295890/suppl/GSE295890%5FAD%5FHSV%5FAD%5FCTRL%2Exlsx">(ftp)</a><a href="/geo/download/?acc=GSE295890&amp;format=file&amp;file=GSE295890%5FAD%5FHSV%5FAD%5FCTRL%2Exlsx">(http)</a></td>
+<td bgcolor="#DEEBDC">XLSX</td>
+</tr>
+<tr valign="top"><td bgcolor="#EEEEEE">GSE295890_AD_TBEV_AD_CTRL.xlsx</td>
+<td bgcolor="#EEEEEE" title="11150736">10.6 Mb</td>
+<td bgcolor="#EEEEEE"><a href="https://ftp.ncbi.nlm.nih.gov/geo/series/GSE295nnn/GSE295890/suppl/GSE295890%5FAD%5FTBEV%5FAD%5FCTRL%2Exlsx">(ftp)</a><a href="/geo/download/?acc=GSE295890&amp;format=file&amp;file=GSE295890%5FAD%5FTBEV%5FAD%5FCTRL%2Exlsx">(http)</a></td>
+<td bgcolor="#EEEEEE">XLSX</td>
+</tr>
+<tr valign="top"><td bgcolor="#DEEBDC">GSE295890_WT_HSV_WT_CTRL.xlsx</td>
+<td bgcolor="#DEEBDC" title="7542535">7.2 Mb</td>
+<td bgcolor="#DEEBDC"><a href="https://ftp.ncbi.nlm.nih.gov/geo/series/GSE295nnn/GSE295890/suppl/GSE295890%5FWT%5FHSV%5FWT%5FCTRL%2Exlsx">(ftp)</a><a href="/geo/download/?acc=GSE295890&amp;format=file&amp;file=GSE295890%5FWT%5FHSV%5FWT%5FCTRL%2Exlsx">(http)</a></td>
+<td bgcolor="#DEEBDC">XLSX</td>
+</tr>
+<tr valign="top"><td bgcolor="#EEEEEE">GSE295890_WT_TBEV_WT_CTRL.xlsx</td>
+<td bgcolor="#EEEEEE" title="38431349">36.7 Mb</td>
+<td bgcolor="#EEEEEE"><a href="https://ftp.ncbi.nlm.nih.gov/geo/series/GSE295nnn/GSE295890/suppl/GSE295890%5FWT%5FTBEV%5FWT%5FCTRL%2Exlsx">(ftp)</a><a href="/geo/download/?acc=GSE295890&amp;format=file&amp;file=GSE295890%5FWT%5FTBEV%5FWT%5FCTRL%2Exlsx">(http)</a></td>
+<td bgcolor="#EEEEEE">XLSX</td>
+</tr>
+<tr valign="top"><td bgcolor="#DEEBDC">GSE295890_counts_HSV_normalized.csv.gz</td>
+<td bgcolor="#DEEBDC" title="1593415">1.5 Mb</td>
+<td bgcolor="#DEEBDC"><a href="https://ftp.ncbi.nlm.nih.gov/geo/series/GSE295nnn/GSE295890/suppl/GSE295890%5Fcounts%5FHSV%5Fnormalized%2Ecsv%2Egz">(ftp)</a><a href="/geo/download/?acc=GSE295890&amp;format=file&amp;file=GSE295890%5Fcounts%5FHSV%5Fnormalized%2Ecsv%2Egz">(http)</a></td>
+<td bgcolor="#DEEBDC">CSV</td>
+</tr>
+<tr valign="top"><td bgcolor="#EEEEEE">GSE295890_counts_TBEV_normalized.csv.gz</td>
+<td bgcolor="#EEEEEE" title="1728746">1.6 Mb</td>
+<td bgcolor="#EEEEEE"><a href="https://ftp.ncbi.nlm.nih.gov/geo/series/GSE295nnn/GSE295890/suppl/GSE295890%5Fcounts%5FTBEV%5Fnormalized%2Ecsv%2Egz">(ftp)</a><a href="/geo/download/?acc=GSE295890&amp;format=file&amp;file=GSE295890%5Fcounts%5FTBEV%5Fnormalized%2Ecsv%2Egz">(http)</a></td>
+<td bgcolor="#EEEEEE">CSV</td>
+</tr>
+<tr><td><a href="/Traces/study/?acc=PRJNA1256735">SRA Run Selector</a><a href="javascript:RPopUpWindow_Set(geoaxema_srarun,260,120,'','','#E1EAE6','','#538AA9','MessageBox2');" onmouseout="RPopUpWindow_Stop()"><img alt="Help" height="11" src="/coreweb/images/long_help4.gif" style="border: none" width="19"></a></td></tr>
+<tr><td class="message">Raw data are available in SRA</td></tr>
+</tbody>

@@ -1,0 +1,7 @@
+DOWNLOAD:	https://cytoscape.org/download.html
+
+
+
+Network representation and analysis
+The filtered dataset on adj p.value < 0.07 was uploaded on STRING to generate a network. The network was then imported in Cytoscape (v3.8.1) and analyzed with stringApp (v1.6.0). Subcellular compartments were assigned by filtration in stringApp. Maps representing enrichments at different time-points were plotted by using the Hierarchical Clustering function in clusterMaker.
+PAPER:		https://www.nature.com/articles/s41467-023-36132-9#Sec12

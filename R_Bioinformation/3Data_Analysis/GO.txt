@@ -1,0 +1,4 @@
+GO and reactome enrichments
+GO and Reactome enrichments present in Fig. S3 were calculated using the Functional Enrichment Analysis with values/ranks in STRING83.
+PAPER:		https://www.nature.com/articles/s41467-023-36132-9#Sec12
+
