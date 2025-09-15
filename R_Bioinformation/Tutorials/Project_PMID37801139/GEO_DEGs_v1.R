@@ -1,4 +1,7 @@
-## GEO_DEGs_Analysis
+## GEO_DEGs_Analysis------------------------------------------------------------
+# Integrating TSPO PET imaging and transcriptomics to unveil the role of neuroinflammation and amyloid‐β deposition in Alzheimer’s disease
+# PMID: 37801139
+
 rm(list = ls()) #清空变量
 gc()
 source('function_zwr.R')
