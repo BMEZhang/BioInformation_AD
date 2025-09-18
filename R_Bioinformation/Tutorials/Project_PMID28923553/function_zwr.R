@@ -40,11 +40,99 @@ data_download_zwr <- function(output_dir,gse_number){
   sample_matrix <- exprs(eSet[[1]]) # 提取表达矩阵
   sample_matrix <- examine_matrix_zwr(sample_matrix) # 检查数据是否已经标准化
   sample_metadata <- pData(eSet[[1]]) # 提取样本元数据
+  gpl_number <- eSet[[1]]@annotation
+  gpl <- getGEO(gpl_number,destdir = output_dir)
+  annot_table <- Table(gpl)   # 提取原始注释表
   
   p = identical(rownames(sample_metadata),colnames(sample_matrix));p
-  if(p){return(list(sample_matrix,sample_metadata,eSet[[1]]))}else{return(NULL)}
+  if(p){return(list(sample_matrix,sample_metadata,annot_table))}else{print('DOWNLOAD ERROR')}
   
 }
+
+# 提取PROBEID、SYMBOL以及ENTREZID
+probe_annot_zwr <- function(annot_table,TABLE_ID,TABLE_SYMBOL,TABLE_ENTREZID){
+  if ((TABLE_ENTREZID %in% colnames(annot_table)) & (TABLE_SYMBOL %in% colnames(annot_table))) {
+    print("使用GPL平台注释文件")
+    probe2entrez <- annot_table %>%
+      dplyr::select(PROBEID = TABLE_ID, SYMBOL = TABLE_SYMBOL, ENTREZID = TABLE_ENTREZID) %>%
+      filter(!is.na(ENTREZID) & ENTREZID != "")
+    
+    multi_mapping_probes <- probe2entrez$SYMBOL[grepl("///", probe2entrez$ENTREZID)]
+    probe_annot_filtered <- probe2entrez[!probe2entrez$SYMBOL %in% multi_mapping_probes, ]
+    probe_annot_filtered <- probe_annot_filtered %>%
+      mutate(
+        ENTREZID = na_if(as.character(ENTREZID), ""),     # 将空字符串 "" 转换为 NA
+        ENTREZID = na_if(as.character(ENTREZID), "---"),  # 将 "---" 转换为 NA
+        ENTREZID = na_if(as.character(ENTREZID), "unknown") # 如果需要，还可以处理其他标记
+      ) %>%
+      na.omit() # 现在，na.omit() 会一次性删除所有包含NA的行
+    
+    multi_mapping_probes <- probe2entrez$ENTREZID[grepl("///", probe2entrez$SYMBOL)]
+    probe_annot_filtered <- probe2entrez[!probe2entrez$ENTREZID %in% multi_mapping_probes, ]
+    probe_annot_filtered <- probe_annot_filtered %>%
+      mutate(
+        SYMBOL = na_if(SYMBOL, ""),     # 将空字符串 "" 转换为 NA
+        SYMBOL = na_if(SYMBOL, "---"),  # 将 "---" 转换为 NA
+        SYMBOL = na_if(SYMBOL, "unknown") # 如果需要，还可以处理其他标记
+      ) %>%
+      na.omit() # 现在，na.omit() 会一次性删除所有包含NA的行
+    
+    examine_gpl_zwr(probe_annot_filtered) # 检查GPL去空后数据
+    dup <- duplicated(probe_annot_filtered[, 2])
+    probe_annot <- probe_annot_filtered[!dup, ]
+    # probe_annot <- probe_annot_filtered[unique(probe_annot_filtered$SYMBOL),]
+  }else if (TABLE_SYMBOL %in% colnames(annot_table))
+  {
+    print("缺少ENTREZID，使用org.Hs.eg.db注释文件")
+    probe2entrez <- annot_table %>%
+      dplyr::select(PROBEID = TABLE_ID, SYMBOL = TABLE_SYMBOL) %>%
+      filter(!is.na(PROBEID) & SYMBOL != "")
+    probe2entrez <- probe2entrez[!duplicated(probe2entrez[, "SYMBOL"]), ]
+    SYMBOL_ids <- probe2entrez$SYMBOL
+    id_mapping <- AnnotationDbi::select(org.Hs.eg.db,
+                                        keys = SYMBOL_ids,    # 你的探针ID向量
+                                        keytype = "SYMBOL",  # 
+                                        columns = c("SYMBOL", "ENTREZID"))
+    id_mapping <- id_mapping[!duplicated(id_mapping[, "SYMBOL"]), ]
+    probe_annot_filtered <- merge(probe2entrez, id_mapping, by = "SYMBOL")
+    probe_annot_filtered <- probe_annot_filtered %>%
+      mutate(
+        ENTREZID = na_if(ENTREZID, ""),     # 将空字符串 "" 转换为 NA
+        ENTREZID = na_if(ENTREZID, "---"),  # 将 "---" 转换为 NA
+        ENTREZID = na_if(ENTREZID, "unknown") # 如果需要，还可以处理其他标记
+      ) %>%
+      na.omit() # 现在，na.omit() 会一次性删除所有包含NA的行
+    examine_gpl_zwr(probe_annot_filtered) # 检查GPL去空后数据
+    dup <- duplicated(probe_annot_filtered[, "SYMBOL"])
+    probe_annot <- probe_annot_filtered[!dup, ]
+  }else
+  {
+    print("缺少SYMBOL，使用org.Hs.eg.db注释文件")
+    probe2entrez <- annot_table %>%
+      dplyr::select(PROBEID = TABLE_ID, ENTREZID = TABLE_ENTREZID) %>%
+      filter(!is.na(PROBEID) & ENTREZID != "")
+    probe2entrez <- probe2entrez[!duplicated(probe2entrez[, "ENTREZID"]), ]
+    ENTREZID_ids <- probe2entrez$ENTREZID
+    id_mapping <- AnnotationDbi::select(org.Hs.eg.db,
+                                        keys = as.character(ENTREZID_ids),    # 你的探针ID向量
+                                        keytype = "ENTREZID",  # 
+                                        columns = c("SYMBOL", "ENTREZID"))
+    id_mapping <- id_mapping[!duplicated(id_mapping[, "ENTREZID"]), ]
+    probe_annot_filtered <- merge(probe2entrez, id_mapping, by = "ENTREZID")
+    probe_annot_filtered <- probe_annot_filtered %>%
+      mutate(
+        SYMBOL = na_if(SYMBOL, ""),     # 将空字符串 "" 转换为 NA
+        SYMBOL = na_if(SYMBOL, "---"),  # 将 "---" 转换为 NA
+        SYMBOL = na_if(SYMBOL, "unknown") # 如果需要，还可以处理其他标记
+      ) %>%
+      na.omit() # 现在，na.omit() 会一次性删除所有包含NA的行
+    examine_gpl_zwr(probe_annot_filtered) # 检查GPL去空后数据
+    dup <- duplicated(probe_annot_filtered[, "ENTREZID"])
+    probe_annot <- probe_annot_filtered[!dup, ]
+    }
+  return(probe_annot)
+}
+
 # 检查数据是否已经标准化
 examine_matrix_zwr <- function(exp) {
   #exp = log2(exp+1) #看数据是否已经取过log值——数值是否跨数量级
@@ -61,14 +149,18 @@ examine_matrix_zwr <- function(exp) {
 }
 # 检查GPL质量
 examine_gpl_zwr <- function(probe_annot){
-  probe_ids <- rownames(probe_annot)
+  probe_ids <- probe_annot$PROBEID
   total_probes <- length(probe_ids)
-  annotated_probes <- sum(!is.na(probe_annot$SYMBOL) & probe_annot$SYMBOL != "")
-  coverage_rate <- annotated_probes / total_probes * 100
+  annotated_symbol <- sum(!is.na(probe_annot$SYMBOL) & probe_annot$SYMBOL != "")
+  coverage_rate <- annotated_symbol / total_probes * 100
   cat(sprintf("注释覆盖率: %.4f%%\n", coverage_rate))
   # 检查基因数量
-  unique_genes <- length(unique(probe_annot$SYMBOL[!is.na(probe_annot$SYMBOL)]))
-  cat(sprintf("唯一基因数量: %d\n", unique_genes))}
+  unique_symbol <- length(unique(probe_annot$SYMBOL[!is.na(probe_annot$SYMBOL)]))
+  cat(sprintf("唯一SYMBOL数量: %d\n", unique_symbol))
+  unique_genes <- length(unique(probe_annot$ENTREZID[!is.na(probe_annot$ENTREZID)]))
+  cat(sprintf("唯一ENTREZID数量: %d\n", unique_genes))
+  }
+
 # 检查表达矩阵和样本信息是否匹配
 examine_meta_zwr <- function(expr_mat, Group_mat){
   stopifnot(colnames(expr_mat) == Group_mat$SampleID)
@@ -118,9 +210,39 @@ desert_expr_zwr <- function(sample_matrix, probe_annot){
   # expr_df$PROBEID <- rownames(expr_df) # 将行名变为一列
   # 3.5 使用dplyr的left_join根据PROBEID列合并表达矩阵和注释信息
   # combined_data <- left_join(expr_df, probe_annot_filtered, by = "PROBEID")
-  gene_expr <- select(gene_expr, -SYMBOL) # 删除 b 列
+  gene_expr <- select(gene_expr, -SYMBOL) # 删除 SYMBOL 列
   return(gene_expr)
 }
+
+# 保存expr_mat，sample_metadata，probe_annot至csv表以及.Rdata文件。
+save_mat_zwr <- function(output_dir1, gse_number,expr_mat, sample_metadata,probe_annot){
+  new_line <- rownames(expr_mat)
+  expr_mat_file <- data.frame(expr_mat,SYMBOL = new_line)
+  expr_mat_file = select(expr_mat_file,dim(expr_mat_file)[2],1:dim(expr_mat_file)[2]-1)
+  exprdata_Name <- paste(output_dir1, gse_number, "_matrix_expr.csv", sep = "", collapse = NULL)
+  write.csv(expr_mat_file, exprdata_Name, row.names = F)
+  rm(expr_mat_file,new_line)
+  cat(sprintf("%s文件已保存\n", exprdata_Name))
+  
+  new_line <- rownames(sample_metadata)
+  sample_metadata_file <- data.frame(sample_metadata,SAMPLE = new_line)
+  sample_metadata_file = select(sample_metadata_file,dim(sample_metadata_file)[2],1:dim(sample_metadata_file)[2]-1)
+  metadata_Name <- paste(output_dir1, gse_number, "_metadata.csv", sep = "", collapse = NULL)
+  write.csv(sample_metadata_file, metadata_Name, row.names = F)
+  rm(sample_metadata_file,new_line)
+  cat(sprintf("%s文件已保存\n", metadata_Name))
+  
+  filename <-  paste(output_dir1, gse_number, '_step1output.Rdata', sep = "", collapse = NULL)
+  gpl_number <- unique(sample_metadata$platform_id)
+  save(gse_number,probe_annot,sample_metadata,annot_table,expr_mat,gpl_number,file = filename) # 保存数据
+  cat(sprintf("%s文件已保存\n", filename))
+  
+  png(file = paste(output_dir1, gse_number, '_Expr_boxplot.png', sep = "", collapse = NULL), width = 800, height = 600)
+  boxplot(expr_mat, main = gse_number, ylab="Express",xlab="Sample")
+  dev.off()
+}
+
+
 # 模型线性拟合
 fit_line_zwr <- function(Group_mat,expr_mat){
   # 创建设计矩阵
@@ -154,30 +276,38 @@ fit_line_zwr <- function(Group_mat,expr_mat){
   return(all_deg_results)
 }
 # 结果可视化
-vis_GOKEGG_zwr <- function(val,ego_bp,kk){
+vis_GOKEGG_zwr <- function(val,ego_bp,kk,output_dir1,gse_number){
   switch(EXPR = val,
          "barplot"= {
+           png(file = paste(output_dir1, gse_number, '_GO_barplot.png', sep = "", collapse = NULL), width = 800, height = 600)
            barplot(ego_bp,
                    showCategory = 15, # 显示最显著的前15个Term
                    title = "GO Biological Process Enrichment",
                    font.size = 8)
+           dev.off()
          },
          "dotplot"= {
+           png(file = paste(output_dir1, gse_number, '_KEGG_dotplot.png', sep = "", collapse = NULL), width = 800, height = 600)
            dotplot(ego_bp, showCategory = 15)
            dotplot(kk,
                    showCategory = 15,
                    title = "KEGG Pathway Enrichment")
+           dev.off()
          },
          "ego_bp2"= {
+           png(file = paste(output_dir1, gse_number, '_GO_bp2.png', sep = "", collapse = NULL), width = 800, height = 600)
            ego_bp2 <- pairwise_termsim(ego_bp)
            emapplot(ego_bp2, showCategory = 20)
+           dev.off()
          },
          "cnetplot"= {
+           png(file = paste(output_dir1, gse_number, '_GO_cnetplot.png', sep = "", collapse = NULL), width = 800, height = 600)
            cnetplot(ego_bp,
                     showCategory = 5, # 只显示前5个Term，否则图会很乱
                     circular = FALSE,
                     colorEdge = TRUE,
                     node_label = "all")
+           dev.off()
          }, # 显示所有节点标签
          {
            stop("Unknown plot type: ", val)  # 未知类型报错

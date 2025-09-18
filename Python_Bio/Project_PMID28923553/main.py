@@ -138,20 +138,19 @@ def GEO_spider(GEO_GSE,GEO_txt):
     # gse_file = GEO_GSE
     # wb.save(filename=work_path.joinpath('',gse_file))
     # wb.save(filename=work_path.joinpath('备份','备份'+gse_file))
-    append_to_excel_pandas(data, "./AD_Blood/Lymphatic_Blood.xlsx", sheet_name="Sheet1")
+    append_to_excel_pandas(data, "D:/Bio_Data/GEO/DATA_PMID28923553/Lymphatic_Blood.xlsx", sheet_name="Sheet1")
     # file_excel =  "D:\\Research_Paper\\Paper\\1AD_MLVs\\2AD_mLVs_bioinformatics\\spider_py\\GEO_database\\GEO_AD.xlsx"
     # df = pd.DataFrame(data, columns=['NUM', 'GSE', 'Title', 'Summary','GPL','DATA','SAMPLES','Type'])
     # df.to_excel(file_excel, index=False)
 
 # 按装订区域中的绿色按钮以运行脚本。
 if __name__ == '__main__':
-    GEO_id = 'GSE5281'
     #url = paste("https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=", GEO_id, sep="")
     #url = "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={} sep=\"\" ".format(GEO_id)
     #print_mission(url)
     p = re.compile('GSE(\d*?)"', re.S)
     print(p)
-    file_path = "./AD_Blood/Lymphatic_Blood.txt"
+    file_path = "D:/Bio_Data/GEO/DATA_PMID28923553/Lymphatic_Blood.txt"
 
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
